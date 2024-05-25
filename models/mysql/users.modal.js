@@ -20,4 +20,5 @@ export const User = sequelize.define("User", {
 });
 
 User.hasMany(Task, { foreignKey: "userId" });
+Task.belongsTo(User)
 await sequelize.sync();

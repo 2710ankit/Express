@@ -7,6 +7,7 @@ export const getAllTasks = catchAsync(async (req, res, next) => {
   // TODO :- check user is valid or not
   // TODO :- show user specific data,
 
+  console.log(1);
   const tasks = await Task.findAll();
 
   res.send({
