@@ -3,6 +3,7 @@ import userRouter from "./routes/userRoutes.js";
 import { AppError } from "./utils/error-handler.util.js";
 import { globalErrorHandler } from "./controllers/errorController.js";
 import taskRouter from "./routes/taskRoutes.js";
+import { connectDB } from "./database-connection.js";
 
 const app = express();
 app.use(express.json());
@@ -20,3 +21,4 @@ const port = 3001;
 app.listen(port, () => {
   console.log(`Listening to port ${port}`);
 });
+connectDB()

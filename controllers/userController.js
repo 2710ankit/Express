@@ -1,22 +1,29 @@
+import { User } from "../models/mysql/users.modal.js";
+import { catchAsync } from "../utils/catch-async-error.util.js";
 import { AppError } from "../utils/error-handler.util.js";
 
-let loginCred = {
-  username: "ankit",
-  password: "asdasdasd",
-};
-export const login = (req, res, next) => {
+export const login = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
 
   if (!username || !password)
     throw new AppError("Username or Password not found", 400);
 
-  if (username !== loginCred.username || password !== loginCred.password)
-    throw new AppError("Username or Password not Correct", 400);
+  try {
+    const user = await User.findOne({
+      where: {
+        username,
+        password,
+      },
+    });
 
-  res.send("success");
-};
+    if (!user) throw new AppError("Username or Password not Correct", 400);
+    res.send(user);
+  } catch (error) {
+    throw new AppError(error, 400);
+  }
+});
 
-export const signUp = (req, res, next) => {
+export const signUp = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
 
   if (!username || !password)
@@ -24,7 +31,14 @@ export const signUp = (req, res, next) => {
 
   //  TODO :- check for already existing user
 
-  loginCred = { ...req.body };
+  try {
+    await User.create({
+      username,
+      password,
+    });
+  } catch (error) {
+    throw new AppError(error, 400);
+  }
 
   res.send("success");
-};
+});
