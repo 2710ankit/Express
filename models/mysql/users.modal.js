@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../../database-connection.js";
 import { Task } from "./tasks.modal.js";
-export const User = sequelize.define("User", {
+export const User = sequelize.define("user", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,

@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../../database-connection.js";
-export const Task = sequelize.define("Task", {
+export const Task = sequelize.define("task", {
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -21,4 +21,3 @@ export const Task = sequelize.define("Task", {
   },
 });
 
-await sequelize.sync();

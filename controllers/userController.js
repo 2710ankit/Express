@@ -1,44 +1,69 @@
+import { SECRET_KEY } from "../middlewares/token-verification.middleware.js";
 import { User } from "../models/mysql/users.modal.js";
+import { compareHash, generateHash } from "../utils/bycrypt.util.js";
 import { catchAsync } from "../utils/catch-async-error.util.js";
 import { AppError } from "../utils/error-handler.util.js";
+import jwt from "jsonwebtoken";
 
 export const login = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
 
-  if (!username || !password)
-    throw new AppError("Username or Password not found", 400);
+  if (!username || !password) {
+    return next(new AppError("Username or Password not found", 400));
+  }
 
-  try {
-    const user = await User.findOne({
-      where: {
-        username,
-        password,
+  const user = await User.findOne({
+    where: { username },
+  });
+
+  if (!user || !(await compareHash(password, user.password))) {
+    return next(new AppError("Username or Password not Correct", 403));
+  }
+
+  const token = jwt.sign({ userId: user.id }, SECRET_KEY, {
+    expiresIn: "1h",
+  });
+
+  res
+    .cookie("token", token, {
+      expires: new Date(Date.now() + 900000),
+      httpOnly: true,
+    })
+    .status(200)
+    .json({
+      status: "success",
+      data: {
+        user,
       },
     });
-
-    if (!user) throw new AppError("Username or Password not Correct", 400);
-    res.send(user);
-  } catch (error) {
-    throw new AppError(error, 400);
-  }
 });
 
 export const signUp = catchAsync(async (req, res, next) => {
   const { username, password } = req.body;
 
-  if (!username || !password)
-    throw new AppError("Username or Password not found", 400);
-
-  //  TODO :- check for already existing user
-
-  try {
-    await User.create({
-      username,
-      password,
-    });
-  } catch (error) {
-    throw new AppError(error, 400);
+  if (!username || !password) {
+    return next(new AppError("Username or Password not found", 400));
   }
 
-  res.send("success");
+  const existingUser = await User.findOne({
+    where: { username },
+  });
+
+  if (existingUser) {
+    return next(new AppError("Username already present", 409));
+  }
+
+  const hash = await generateHash(password);
+
+  const newUser = await User.create({
+    username,
+    password: hash,
+  });
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      user: newUser,
+    },
+  });
 });
