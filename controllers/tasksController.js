@@ -3,13 +3,27 @@ import { catchAsync } from "../utils/catch-async-error.util.js";
 import { AppError } from "../utils/error-handler.util.js";
 import { getUserFromJWT } from "../utils/user-login-check.util.js";
 
+import { User } from "../models/mysql/users.modal.js";
+
 export const getAllTasks = catchAsync(async (req, res, next) => {
-  console.log(1)
   const { userId } = getUserFromJWT(req.header("Authorization"));
-  console.log(userId)
+
+  let searchQuery = {};
+  const user = await User.findOne({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (user?.dataValues?.role.includes("user")) {
+    searchQuery = {
+      id: userId,
+    };
+  }
+
   const tasks = await Task.findAll({
     where: {
-      userId,
+      ...searchQuery,
     },
   });
 

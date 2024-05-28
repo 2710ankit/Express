@@ -17,8 +17,13 @@ export const User = sequelize.define("user", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+
+  role: {
+    type: DataTypes.ARRAY(DataTypes.STRING),
+    allowNull: false,
+  },
 });
 
 User.hasMany(Task, { foreignKey: "userId" });
-Task.belongsTo(User, { foreignKey: "userId" })
+Task.belongsTo(User, { foreignKey: "userId" });
 await sequelize.sync();
