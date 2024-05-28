@@ -33,7 +33,7 @@ export const login = catchAsync(async (req, res, next) => {
 });
 
 export const signUp = catchAsync(async (req, res, next) => {
-  const { username, password } = req.body;
+  let { username, password, roles } = req.body;
 
   if (!username || !password) {
     return next(new AppError("Username or Password not found", 400));
@@ -49,9 +49,11 @@ export const signUp = catchAsync(async (req, res, next) => {
 
   const hash = await generateHash(password);
 
+  roles = roles ?? ["user"];
   const newUser = await User.create({
     username,
     password: hash,
+    role: roles,
   });
 
   res.status(201).json({

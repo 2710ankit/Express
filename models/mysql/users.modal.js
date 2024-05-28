@@ -24,6 +24,6 @@ export const User = sequelize.define("user", {
   },
 });
 
-User.hasMany(Task, { foreignKey: "userId" });
+User.hasMany(Task, { foreignKey: "userId", onDelete:"CASCADE" });
 Task.belongsTo(User, { foreignKey: "userId" });
 await sequelize.sync();
