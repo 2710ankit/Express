@@ -4,7 +4,9 @@ import { AppError } from "../utils/error-handler.util.js";
 import { getUserFromJWT } from "../utils/user-login-check.util.js";
 
 export const getAllTasks = catchAsync(async (req, res, next) => {
-  const { userId } = getUserFromJWT(req.cookies.token);
+  console.log(1)
+  const { userId } = getUserFromJWT(req.header("Authorization"));
+  console.log(userId)
   const tasks = await Task.findAll({
     where: {
       userId,
@@ -24,7 +26,7 @@ export const createTask = catchAsync(async (req, res, next) => {
     throw new AppError("Data is not Valid", 400);
 
   //  TODO :- check the data type, valid or not
-  const { userId } = getUserFromJWT(req.cookies.token);
+  const { userId } = getUserFromJWT(req.header("Authorization"));
   const newTask = await Task.create({ ...req.body, userId });
   res.send({
     status: 201,

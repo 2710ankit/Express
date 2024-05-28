@@ -11,10 +11,12 @@ const app = express();
 
 app.use(express.json());
 
-app.use(cors());
+app.use(cors({
+  exposedHeaders:"Authorization"
+}));
 app.use(cookieParser())
 
-app.use("/api/user", userRouter);
+app.use("/api/auth", userRouter);
 app.use("/api/tasks",verifyToken, taskRouter);
 
 app.all("*", (req, res, next) => {

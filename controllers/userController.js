@@ -24,18 +24,12 @@ export const login = catchAsync(async (req, res, next) => {
     expiresIn: "1h",
   });
 
-  res
-    .cookie("token", token, {
-      expires: new Date(Date.now() + 900000),
-      httpOnly: true,
-    })
-    .status(200)
-    .json({
-      status: "success",
-      data: {
-        user,
-      },
-    });
+  res.setHeader("Authorization", token).status(200).json({
+    status: "success",
+    data: {
+      user,
+    },
+  });
 });
 
 export const signUp = catchAsync(async (req, res, next) => {
